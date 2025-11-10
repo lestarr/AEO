@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}AEO Assessment Report - {{ company_name }}{% endblock %}
+
+{% block content %}
+<!-- Report Header -->
+<div class="bg-white rounded-xl shadow-sm p-8 mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-900">AEO Assessment Report</h2>
+            <p class="text-xl text-gray-600 mt-2">{{ company_name }}</p>
+        </div>
+        <div class="text-right text-sm text-gray-500">
+            <p>Generated: {{ timestamp }}</p>
+            <p>Provider: {{ provider }}</p>
+        </div>
+    </div>
+
+    <div class="flex gap-4 mt-6">
+        <a
+            href="/"
+            class="bg-purple-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-purple-700 transition-colors"
+        >
+            Generate Another Assessment
+        </a>
+        <button
+            onclick="window.print()"
+            class="bg-gray-200 text-gray-700 font-medium py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors"
+        >
+            Print / Save as PDF
+        </button>
+    </div>
+</div>
+
+<!-- Report Sections -->
+<div class="space-y-6">
+    <!-- Snapshot -->
+    <div class="bg-white rounded-xl shadow-sm p-8">
+        <div class="flex items-center mb-4">
+            <div class="text-3xl mr-3">📊</div>
+            <h3 class="text-2xl font-semibold text-gray-900">Snapshot: what the engines can already see</h3>
+        </div>
+        <div class="prose-custom">
+            {{ result.snapshot | safe }}
+        </div>
+    </div>
+
+    <!-- Limitations -->
+    <div class="bg-white rounded-xl shadow-sm p-8">
+        <div class="flex items-center mb-4">
+            <div class="text-3xl mr-3">🚫</div>
+            <h3 class="text-2xl font-semibold text-gray-900">The catch: what limits inclusion <em>inside</em> AI answers</h3>
+        </div>
+        <div class="prose-custom">
+            {{ result.limitations | safe }}
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="bg-white rounded-xl shadow-sm p-8">
+        <div class="flex items-center mb-4">
+            <div class="text-3xl mr-3">✅</div>
+            <h3 class="text-2xl font-semibold text-gray-900">What "good" looks like (and how to get there)</h3>
+        </div>
+        <div class="prose-custom">
+            {{ result.recommendations | safe }}
+        </div>
+    </div>
+
+    <!-- Anti-patterns -->
+    <div class="bg-white rounded-xl shadow-sm p-8">
+        <div class="flex items-center mb-4">
+            <div class="text-3xl mr-3">⚠️</div>
+            <h3 class="text-2xl font-semibold text-gray-900">Anti-patterns to stop or fix</h3>
+        </div>
+        <div class="prose-custom">
+            {{ result.anti_patterns | safe }}
+        </div>
+    </div>
+
+    <!-- Action Plan -->
+    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl shadow-sm p-8">
+        <div class="flex items-center mb-4">
+            <div class="text-3xl mr-3">📅</div>
+            <h3 class="text-2xl font-semibold text-gray-900">30–45 day plan (high-impact, doable)</h3>
+        </div>
+        <div class="prose-custom">
+            {{ result.action_plan | safe }}
+        </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="bg-white rounded-xl shadow-sm p-8">
+        <div class="flex items-center mb-4">
+            <div class="text-3xl mr-3">📈</div>
+            <h3 class="text-2xl font-semibold text-gray-900">How we'll measure whether this worked</h3>
+        </div>
+        <div class="prose-custom">
+            {{ result.metrics | safe }}
+        </div>
+    </div>
+</div>
+
+<!-- CTA Footer -->
+<div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl shadow-lg p-8 mt-8 text-white text-center">
+    <h3 class="text-2xl font-bold mb-4">Want to improve your AEO?</h3>
+    <p class="text-lg text-purple-100 mb-6 max-w-2xl mx-auto">
+        This assessment identifies the opportunities. Need help implementing these recommendations?
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+            href="https://github.com/lestarr/AEO"
+            target="_blank"
+            class="bg-white text-purple-600 font-semibold py-3 px-8 rounded-lg hover:bg-purple-50 transition-colors"
+        >
+            View Project on GitHub
+        </a>
+        <a
+            href="/"
+            class="bg-purple-700 text-white font-semibold py-3 px-8 rounded-lg hover:bg-purple-800 transition-colors"
+        >
+            Assess Another Company
+        </a>
+    </div>
+</div>
+
+<!-- Raw Response (collapsible, for debugging) -->
+{% if result.raw_response %}
+<div class="mt-8">
+    <details class="bg-gray-100 rounded-lg p-4">
+        <summary class="font-medium text-gray-700 cursor-pointer">View Raw Response</summary>
+        <pre class="mt-4 text-xs text-gray-600 overflow-x-auto whitespace-pre-wrap">{{ result.raw_response }}</pre>
+    </details>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Add markdown-like formatting to text content
+    document.addEventListener('DOMContentLoaded', function() {
+        const proseSections = document.querySelectorAll('.prose-custom');
+        proseSections.forEach(section => {
+            let html = section.innerHTML;
+
+            // Convert **bold** to <strong>
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            // Convert *italic* to <em>
+            html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+            // Convert URLs to links
+            html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" class="text-purple-600 hover:text-purple-700 underline">$1</a>');
+
+            // Convert line breaks to <br> if not already in tags
+            html = html.replace(/\n\n/g, '</p><p class="mb-4 text-gray-700">');
+            html = html.replace(/\n/g, '<br>');
+
+            section.innerHTML = html;
+        });
+    });
+</script>
+{% endblock %}
