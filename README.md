@@ -75,7 +75,7 @@ uvicorn app.main:app --reload
 
 5. **Open in browser**
 
-Navigate to: http://localhost:8000
+Navigate to: http://localhost:8002
 
 ## Using Different LLM Providers
 
