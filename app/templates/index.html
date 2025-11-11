@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}Free AEO Assessment - How AI Engines See Your Company{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="text-center mb-12">
+    <div class="gradient-bg text-white rounded-2xl p-8 sm:p-12 mb-8">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4">
+            How do AI engines see your company?
+        </h2>
+        <p class="text-xl sm:text-2xl text-purple-100 mb-6">
+            Free AEO (AI Engine Optimization) Assessment
+        </p>
+        <p class="text-lg text-purple-50 max-w-3xl mx-auto">
+            Discover how ChatGPT, Claude, Gemini, and Perplexity understand your brand—and what's holding you back from being cited in AI answers.
+        </p>
+    </div>
+
+    <!-- What is AEO? -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-8 text-left">
+        <h3 class="text-2xl font-semibold text-gray-900 mb-4">What is AEO?</h3>
+        <p class="text-gray-700 mb-4">
+            <strong>AEO (AI Engine Optimization)</strong> is how companies ensure AI assistants like ChatGPT, Claude, Gemini, and Perplexity accurately understand, cite, and recommend them in answers.
+        </p>
+        <p class="text-gray-700">
+            As users shift from Google to AI for research, being visible <em>inside</em> AI-generated answers—with proper citations—is becoming critical for brand awareness, trust, and lead generation.
+        </p>
+    </div>
+</div>
+
+<!-- Assessment Form -->
+<div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+    <h3 class="text-2xl font-semibold text-gray-900 mb-6 text-center">
+        Generate Your Free Assessment
+    </h3>
+
+    <form id="assessmentForm" class="max-w-xl mx-auto">
+        <div class="mb-6">
+            <label for="companyName" class="block text-sm font-medium text-gray-700 mb-2">
+                Company Name *
+            </label>
+            <input
+                type="text"
+                id="companyName"
+                name="company_name"
+                required
+                placeholder="e.g., Stripe, IntraFind Software AG"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+            <p class="mt-2 text-sm text-gray-500">
+                Enter the company you want to assess
+            </p>
+        </div>
+
+        <button
+            type="submit"
+            id="submitBtn"
+            class="w-full bg-purple-600 text-white font-semibold py-4 px-6 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-200"
+        >
+            Generate Assessment
+        </button>
+    </form>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="hidden mt-8 text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
+        <p class="text-lg font-medium text-gray-900">Generating your assessment...</p>
+        <p class="text-sm text-gray-600 mt-2">This typically takes 2-5 minutes</p>
+        <div class="mt-4 space-y-2">
+            <p id="statusMessage" class="text-sm text-gray-500">Researching company...</p>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden mt-8 bg-red-50 border border-red-200 rounded-lg p-6">
+        <h4 class="text-lg font-semibold text-red-900 mb-2">Assessment Failed</h4>
+        <p id="errorMessage" class="text-red-700"></p>
+        <button
+            onclick="resetForm()"
+            class="mt-4 bg-red-600 text-white font-medium py-2 px-4 rounded hover:bg-red-700"
+        >
+            Try Again
+        </button>
+    </div>
+</div>
+
+<!-- What You'll Get -->
+<div class="bg-white rounded-xl shadow-sm p-8 mb-8">
+    <h3 class="text-2xl font-semibold text-gray-900 mb-6">What You'll Get</h3>
+    <div class="grid md:grid-cols-2 gap-6">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-purple-100 text-purple-600 text-2xl">
+                    📊
+                </div>
+            </div>
+            <div class="ml-4">
+                <h4 class="text-lg font-semibold text-gray-900">Current State Analysis</h4>
+                <p class="mt-2 text-gray-600">See what AI engines already know about your company and where information is coming from.</p>
+            </div>
+        </div>
+
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-purple-100 text-purple-600 text-2xl">
+                    🚫
+                </div>
+            </div>
+            <div class="ml-4">
+                <h4 class="text-lg font-semibold text-gray-900">Limitations & Gaps</h4>
+                <p class="mt-2 text-gray-600">Identify specific blockers preventing AI citations and visibility.</p>
+            </div>
+        </div>
+
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-purple-100 text-purple-600 text-2xl">
+                    ✅
+                </div>
+            </div>
+            <div class="ml-4">
+                <h4 class="text-lg font-semibold text-gray-900">Actionable Recommendations</h4>
+                <p class="mt-2 text-gray-600">Concrete steps to improve your AEO with examples and best practices.</p>
+            </div>
+        </div>
+
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-purple-100 text-purple-600 text-2xl">
+                    📅
+                </div>
+            </div>
+            <div class="ml-4">
+                <h4 class="text-lg font-semibold text-gray-900">30-45 Day Action Plan</h4>
+                <p class="mt-2 text-gray-600">Prioritized roadmap with high-impact, achievable tasks.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Examples -->
+<div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-8">
+    <h3 class="text-xl font-semibold text-gray-900 mb-4">Try an example:</h3>
+    <div class="flex flex-wrap gap-3">
+        <button
+            onclick="fillExample('Stripe')"
+            class="bg-white text-purple-600 font-medium py-2 px-4 rounded-lg hover:shadow-md transition-shadow"
+        >
+            Stripe
+        </button>
+        <button
+            onclick="fillExample('IntraFind Software AG')"
+            class="bg-white text-purple-600 font-medium py-2 px-4 rounded-lg hover:shadow-md transition-shadow"
+        >
+            IntraFind Software AG
+        </button>
+        <button
+            onclick="fillExample('Anthropic')"
+            class="bg-white text-purple-600 font-medium py-2 px-4 rounded-lg hover:shadow-md transition-shadow"
+        >
+            Anthropic
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const form = document.getElementById('assessmentForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const statusMessage = document.getElementById('statusMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    const statusMessages = [
+        'Researching company...',
+        'Analyzing entity presence...',
+        'Evaluating sourceability...',
+        'Checking knowledge graph...',
+        'Identifying gaps...',
+        'Generating recommendations...',
+        'Creating action plan...'
+    ];
+
+    let messageIndex = 0;
+    let statusInterval;
+
+    function updateStatusMessage() {
+        messageIndex = (messageIndex + 1) % statusMessages.length;
+        statusMessage.textContent = statusMessages[messageIndex];
+    }
+
+    function fillExample(companyName) {
+        document.getElementById('companyName').value = companyName;
+    }
+
+    function resetForm() {
+        form.reset();
+        form.classList.remove('hidden');
+        submitBtn.classList.remove('hidden');
+        loadingState.classList.add('hidden');
+        errorState.classList.add('hidden');
+        if (statusInterval) {
+            clearInterval(statusInterval);
+        }
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const companyName = document.getElementById('companyName').value;
+
+        // Show loading state
+        form.classList.add('hidden');
+        submitBtn.classList.add('hidden');
+        loadingState.classList.remove('hidden');
+        errorState.classList.add('hidden');
+
+        // Start status message rotation
+        messageIndex = 0;
+        statusMessage.textContent = statusMessages[0];
+        statusInterval = setInterval(updateStatusMessage, 5000);
+
+        try {
+            const response = await fetch('/assess', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `company_name=${encodeURIComponent(companyName)}`
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Assessment failed');
+            }
+
+            // Redirect to report page (will be rendered by backend)
+            window.location.reload();
+
+        } catch (error) {
+            clearInterval(statusInterval);
+            loadingState.classList.add('hidden');
+            errorState.classList.remove('hidden');
+            errorMessage.textContent = error.message;
+            form.classList.remove('hidden');
+            submitBtn.classList.remove('hidden');
+        }
+    });
+
+    // Make fillExample available globally
+    window.fillExample = fillExample;
+    window.resetForm = resetForm;
+</script>
+{% endblock %}
