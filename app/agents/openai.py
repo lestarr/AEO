@@ -1,39 +1,13 @@
 """OpenAI agent for AEO assessments using pydantic-ai."""
 
 import os
-import httpx
-from pydantic_ai import Agent, RunContext
+from pydantic_ai import Agent, WebSearchTool
 from pydantic_ai.models.openai import OpenAIModel
 from .base import AssessmentAgent, AssessmentResult
 
 
-async def web_search(ctx: RunContext[None], query: str) -> str:
-    """Simple web search tool using DuckDuckGo HTML.
-
-    Args:
-        ctx: Run context
-        query: Search query
-
-    Returns:
-        Search results as text
-    """
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                "https://html.duckduckgo.com/html/",
-                params={"q": query},
-                headers={"User-Agent": "Mozilla/5.0"},
-                timeout=10.0
-            )
-            # Return snippet of results (simplified)
-            text = response.text[:3000]  # Limit size
-            return f"Search results for '{query}':\n{text}"
-    except Exception as e:
-        return f"Search failed: {str(e)}"
-
-
 class OpenAIAgent(AssessmentAgent):
-    """Agent that uses OpenAI models via pydantic-ai with web search tool."""
+    """Agent that uses OpenAI models via pydantic-ai with built-in web search."""
 
     def __init__(self, api_key: str, model: str = "gpt-4o"):
         """Initialize OpenAI agent.
@@ -47,25 +21,23 @@ class OpenAIAgent(AssessmentAgent):
         # Set API key in environment for pydantic-ai
         os.environ["OPENAI_API_KEY"] = api_key
 
-        # Create pydantic-ai agent with OpenAI model
+        # Create pydantic-ai agent with OpenAI model and web search tool
+        # Note: OpenAI requires Responses API for web search
         self.agent = Agent(
             model=OpenAIModel(model),
             result_type=AssessmentResult,
             system_prompt=(
                 "You are an AEO/GENAI-O strategist who produces evidence-based assessment reports. "
-                "Use the web_search tool to research the company thoroughly. "
-                "Search for the company's official website, presence on marketplaces, "
-                "analyst coverage, media mentions, and other credible sources.\n\n"
-                "Structure your response with these exact sections:\n"
-                "1. snapshot: what the engines can already see\n"
-                "2. limitations: what limits inclusion inside AI answers\n"
-                "3. recommendations: what 'good' looks like (and how to get there)\n"
-                "4. anti_patterns: anti-patterns to stop or fix\n"
-                "5. action_plan: 30-45 day plan (high-impact, doable)\n"
-                "6. metrics: how we'll measure whether this worked\n\n"
-                "Each section should be comprehensive with inline citations."
+                "Use the web search tool to thoroughly research the company. "
+                "Search for official websites, marketplaces, analyst coverage, media mentions, and credible sources.\n\n"
+                "Provide comprehensive assessment with inline citations from your searches."
             ),
-            tools=[web_search]
+            builtin_tools=[
+                WebSearchTool(
+                    search_context_size='high',
+                    max_uses=10
+                )
+            ]
         )
 
     async def assess(self, company_name: str, prompt_template: str) -> AssessmentResult:

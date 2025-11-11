@@ -247,12 +247,12 @@ All LLM agents are built using **pydantic-ai** for type-safe, structured outputs
 
 **OpenAI Agent:**
 - Uses `pydantic_ai.models.openai.OpenAIModel`
-- Custom web search tool via DuckDuckGo
+- Built-in `WebSearchTool` from pydantic-ai
 - Supports GPT-4o, o1-preview, and other OpenAI models
 
 **Anthropic Agent:**
 - Uses `pydantic_ai.models.anthropic.AnthropicModel`
-- Custom web search tool for company research
+- Built-in `WebSearchTool` from pydantic-ai
 - Extended thinking enabled for Claude 3.7 Sonnet
 
 **Perplexity Agent:**

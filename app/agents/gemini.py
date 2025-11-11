@@ -14,7 +14,7 @@ class GeminiAgent(AssessmentAgent):
 
         Args:
             api_key: Google AI API key
-            model: Gemini model to use (must be 2.0+ for search grounding)
+            model: Gemini model to use (2.0+ recommended for search grounding)
         """
         super().__init__(api_key, model)
 
@@ -22,21 +22,15 @@ class GeminiAgent(AssessmentAgent):
         os.environ["GEMINI_API_KEY"] = api_key
 
         # Create pydantic-ai agent with Gemini model
-        # Note: Gemini 2.0 has built-in search grounding via google_search tool
+        # Gemini 2.0+ has built-in Google Search grounding
         self.agent = Agent(
             model=GeminiModel(model),
             result_type=AssessmentResult,
             system_prompt=(
                 "You are an AEO/GENAI-O strategist who produces evidence-based assessment reports. "
-                "Use web search to thoroughly research the company. "
-                "Structure your response with these exact sections:\n"
-                "1. Snapshot: what the engines can already see\n"
-                "2. The catch: what limits inclusion inside AI answers\n"
-                "3. What 'good' looks like (and how to get there)\n"
-                "4. Anti-patterns to stop or fix\n"
-                "5. 30-45 day plan (high-impact, doable)\n"
-                "6. How we'll measure whether this worked\n\n"
-                "Each section should be comprehensive with inline citations."
+                "Use your built-in web search capabilities to thoroughly research the company. "
+                "Search for official websites, marketplaces, analyst coverage, media mentions, and credible sources.\n\n"
+                "Provide a comprehensive assessment with inline citations."
             )
         )
 
@@ -54,8 +48,7 @@ class GeminiAgent(AssessmentAgent):
         prompt = self._format_prompt(company_name, prompt_template)
 
         try:
-            # Run agent with pydantic-ai
-            # Gemini 2.0 automatically uses google_search tool when available
+            # Run agent - Gemini 2.0 automatically uses Google Search when needed
             result = await self.agent.run(prompt)
 
             return result.data

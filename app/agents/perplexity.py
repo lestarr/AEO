@@ -19,11 +19,10 @@ class PerplexityAgent(AssessmentAgent):
         super().__init__(api_key, model)
 
         # Perplexity uses OpenAI-compatible API with custom base URL
-        # pydantic-ai will use PERPLEXITY_API_KEY env var
         os.environ["PERPLEXITY_API_KEY"] = api_key
 
         # Create OpenAI-compatible model pointing to Perplexity
-        # Note: Pass base_url via model config
+        # Perplexity models have built-in web search - no tools needed
         self.agent = Agent(
             model=OpenAIModel(
                 model,
@@ -33,17 +32,9 @@ class PerplexityAgent(AssessmentAgent):
             result_type=AssessmentResult,
             system_prompt=(
                 "You are an AEO/GENAI-O strategist who produces evidence-based assessment reports. "
-                "You have built-in web search capabilities - use them to research the company thoroughly. "
-                "Search for the company's official website, presence on marketplaces, "
-                "analyst coverage, media mentions, and other credible sources.\n\n"
-                "Structure your response with these exact sections:\n"
-                "1. snapshot: what the engines can already see\n"
-                "2. limitations: what limits inclusion inside AI answers\n"
-                "3. recommendations: what 'good' looks like (and how to get there)\n"
-                "4. anti_patterns: anti-patterns to stop or fix\n"
-                "5. action_plan: 30-45 day plan (high-impact, doable)\n"
-                "6. metrics: how we'll measure whether this worked\n\n"
-                "Each section should be comprehensive with inline citations from your web searches."
+                "Use your built-in web search capabilities to research the company thoroughly. "
+                "Search for official websites, marketplaces, analyst coverage, media mentions, and credible sources.\n\n"
+                "Provide comprehensive assessment with inline citations from your web searches."
             )
         )
 
@@ -63,8 +54,7 @@ class PerplexityAgent(AssessmentAgent):
         prompt = self._format_prompt(company_name, prompt_template)
 
         try:
-            # Run agent with pydantic-ai
-            # Perplexity will automatically use web search
+            # Run agent - Perplexity will automatically use web search
             result = await self.agent.run(prompt)
 
             return result.data
