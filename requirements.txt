@@ -4,17 +4,17 @@ uvicorn[standard]==0.32.0
 jinja2==3.1.4
 python-multipart==0.0.12
 
-# pydantic-ai and LLM providers
+# pydantic-ai and core dependencies
 pydantic-ai==0.0.14
 pydantic==2.9.2
 pydantic-settings==2.6.0
 
-# LLM Provider SDKs
+# LLM Provider SDKs (required by pydantic-ai)
 google-generativeai==0.8.3
 openai==1.54.4
 anthropic==0.39.0
 
-# HTTP client for Perplexity
+# HTTP client for web search tool and general requests
 httpx==0.27.2
 
 # Utilities
