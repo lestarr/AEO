@@ -1,28 +1,37 @@
 """Gemini agent for AEO assessments using pydantic-ai."""
 
-import google.generativeai as genai
+import os
+from pydantic_ai import Agent
+from pydantic_ai.models.gemini import GeminiModel
 from .base import AssessmentAgent, AssessmentResult
 
 
 class GeminiAgent(AssessmentAgent):
-    """Agent that uses Google's Gemini models via pydantic-ai."""
+    """Agent that uses Google's Gemini models via pydantic-ai with built-in search."""
 
     def __init__(self, api_key: str, model: str = "gemini-2.0-flash-exp"):
         """Initialize Gemini agent.
 
         Args:
             api_key: Google AI API key
-            model: Gemini model to use
+            model: Gemini model to use (2.0+ recommended for search grounding)
         """
         super().__init__(api_key, model)
-        genai.configure(api_key=api_key)
-        self.client = genai.GenerativeModel(
-            model_name=model,
-            generation_config={
-                "temperature": 0.7,
-                "top_p": 0.95,
-                "max_output_tokens": 8192,
-            }
+
+        # Set API key in environment for pydantic-ai
+        os.environ["GEMINI_API_KEY"] = api_key
+
+        # Create pydantic-ai agent with Gemini model
+        # Gemini 2.0+ has built-in Google Search grounding
+        self.agent = Agent(
+            model=GeminiModel(model),
+            result_type=AssessmentResult,
+            system_prompt=(
+                "You are an AEO/GENAI-O strategist who produces evidence-based assessment reports. "
+                "Use your built-in web search capabilities to thoroughly research the company. "
+                "Search for official websites, marketplaces, analyst coverage, media mentions, and credible sources.\n\n"
+                "Provide a comprehensive assessment with inline citations."
+            )
         )
 
     async def assess(self, company_name: str, prompt_template: str) -> AssessmentResult:
@@ -39,28 +48,10 @@ class GeminiAgent(AssessmentAgent):
         prompt = self._format_prompt(company_name, prompt_template)
 
         try:
-            # Note: Gemini's grounding/search is automatic in gemini-2.0-flash-exp
-            # Generate response
-            response = await self.client.generate_content_async(
-                prompt,
-                tools=[{"google_search": {}}] if "2.0" in self.model else None
-            )
+            # Run agent - Gemini 2.0 automatically uses Google Search when needed
+            result = await self.agent.run(prompt)
 
-            # Get text response
-            response_text = response.text
-
-            # Parse into sections
-            sections = self._parse_sections(response_text)
-
-            return AssessmentResult(
-                snapshot=sections.get("snapshot", "No snapshot available"),
-                limitations=sections.get("limitations", "No limitations identified"),
-                recommendations=sections.get("recommendations", "No recommendations provided"),
-                anti_patterns=sections.get("anti_patterns", "No anti-patterns identified"),
-                action_plan=sections.get("action_plan", "No action plan generated"),
-                metrics=sections.get("metrics", "No metrics defined"),
-                raw_response=response_text
-            )
+            return result.data
 
         except Exception as e:
             raise Exception(f"Gemini assessment failed: {str(e)}") from e

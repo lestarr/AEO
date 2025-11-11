@@ -236,6 +236,38 @@ AEO/
 4. **Report Generation**: Structured assessment with recommendations
 5. **Display**: Clean HTML report with actionable insights
 
+### Agent Architecture (pydantic-ai)
+
+All LLM agents are built using **pydantic-ai** for type-safe, structured outputs:
+
+**Gemini Agent:**
+- Uses `pydantic_ai.models.gemini.GeminiModel`
+- Built-in Google Search grounding (Gemini 2.0+)
+- Automatic web research capabilities
+
+**OpenAI Agent:**
+- Uses `pydantic_ai.models.openai.OpenAIModel`
+- Built-in `WebSearchTool` from pydantic-ai
+- Supports GPT-4o, o1-preview, and other OpenAI models
+
+**Anthropic Agent:**
+- Uses `pydantic_ai.models.anthropic.AnthropicModel`
+- Built-in `WebSearchTool` from pydantic-ai
+- Extended thinking enabled for Claude 3.7 Sonnet
+
+**Perplexity Agent:**
+- Uses OpenAI-compatible API with custom base URL
+- Built-in web search and citation capabilities
+- No additional tools needed
+
+All agents return structured `AssessmentResult` objects with validated fields:
+- `snapshot`: Current state analysis
+- `limitations`: Blockers and gaps
+- `recommendations`: Actionable improvements
+- `anti_patterns`: Issues to fix
+- `action_plan`: 30-45 day roadmap
+- `metrics`: Success measurement criteria
+
 ## API Endpoints
 
 - `GET /` - Landing page / report display
