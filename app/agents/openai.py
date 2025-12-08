@@ -1,8 +1,10 @@
 """OpenAI agent for AEO assessments using pydantic-ai."""
 
 import os
+
 from pydantic_ai import Agent, WebSearchTool
-from pydantic_ai.models.openai import OpenAIModel
+from pydantic_ai.models.openai import OpenAIResponsesModel
+
 from .base import AssessmentAgent, AssessmentResult
 
 
@@ -24,8 +26,8 @@ class OpenAIAgent(AssessmentAgent):
         # Create pydantic-ai agent with OpenAI model and web search tool
         # Note: OpenAI requires Responses API for web search
         self.agent = Agent(
-            model=OpenAIModel(model),
-            result_type=AssessmentResult,
+            model=OpenAIResponsesModel(model),
+            output_type=AssessmentResult,
             system_prompt=(
                 "You are an AEO/GENAI-O strategist who produces evidence-based assessment reports. "
                 "Use the web search tool to thoroughly research the company. "
@@ -37,7 +39,8 @@ class OpenAIAgent(AssessmentAgent):
                     search_context_size='high',
                     max_uses=10
                 )
-            ]
+            ],
+            retries=2
         )
 
     async def assess(self, company_name: str, prompt_template: str) -> AssessmentResult:
@@ -56,8 +59,8 @@ class OpenAIAgent(AssessmentAgent):
         try:
             # Run agent with pydantic-ai
             result = await self.agent.run(prompt)
-
-            return result.data
+            print(result.output)
+            return result.output
 
         except Exception as e:
             raise Exception(f"OpenAI assessment failed: {str(e)}") from e

@@ -9,14 +9,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from .agents import AnthropicAgent, GeminiAgent, OpenAIAgent, PerplexityAgent
 from .config import settings
-from .agents import GeminiAgent, OpenAIAgent, AnthropicAgent, PerplexityAgent
 
 # Initialize FastAPI app
 app = FastAPI(
     title="AEO Assessment Tool",
     description="Free AI Engine Optimization assessments for companies",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Setup templates
@@ -59,7 +59,7 @@ last_assessment = {
     "company_name": None,
     "result": None,
     "timestamp": None,
-    "provider": None
+    "provider": None,
 }
 
 
@@ -79,15 +79,12 @@ async def index(request: Request):
                 "company_name": last_assessment["company_name"],
                 "result": last_assessment["result"],
                 "timestamp": last_assessment["timestamp"],
-                "provider": last_assessment["provider"]
-            }
+                "provider": last_assessment["provider"],
+            },
         )
     else:
         # Show form
-        return templates.TemplateResponse(
-            "index.html",
-            {"request": request}
-        )
+        return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.post("/assess")
@@ -109,8 +106,7 @@ async def assess(company_name: str = Form(...)):
 
         # Run assessment
         result = await agent.assess(
-            company_name=company_name,
-            prompt_template=PROMPT_TEMPLATE
+            company_name=company_name, prompt_template=PROMPT_TEMPLATE
         )
 
         # Store in memory
@@ -134,7 +130,7 @@ async def health():
     return {
         "status": "healthy",
         "provider": settings.active_llm_provider,
-        "model": settings.get_active_model()
+        "model": settings.get_active_model(),
     }
 
 
@@ -150,4 +146,5 @@ async def reset():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -35,7 +35,7 @@
 <!-- Report Sections -->
 <div class="space-y-6">
     <!-- Snapshot -->
-    <div class="bg-white rounded-xl shadow-sm p-8">
+<div class="bg-white rounded-xl shadow-sm p-8">
         <div class="flex items-center mb-4">
             <div class="text-3xl mr-3">📊</div>
             <h3 class="text-2xl font-semibold text-gray-900">Snapshot: what the engines can already see</h3>
@@ -142,20 +142,20 @@
         const proseSections = document.querySelectorAll('.prose-custom');
         proseSections.forEach(section => {
             let html = section.innerHTML;
-
+        
             // Convert **bold** to <strong>
-            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-
+        html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        
             // Convert *italic* to <em>
             html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-
+        
             // Convert URLs to links
             html = html.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" class="text-purple-600 hover:text-purple-700 underline">$1</a>');
-
+        
             // Convert line breaks to <br> if not already in tags
             html = html.replace(/\n\n/g, '</p><p class="mb-4 text-gray-700">');
             html = html.replace(/\n/g, '<br>');
-
+        
             section.innerHTML = html;
         });
     });

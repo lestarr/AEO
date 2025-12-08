@@ -1,8 +1,10 @@
 """Perplexity agent for AEO assessments using pydantic-ai."""
 
 import os
+
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
+
 from .base import AssessmentAgent, AssessmentResult
 
 
@@ -25,17 +27,15 @@ class PerplexityAgent(AssessmentAgent):
         # Perplexity models have built-in web search - no tools needed
         self.agent = Agent(
             model=OpenAIModel(
-                model,
-                base_url="https://api.perplexity.ai",
-                api_key=api_key
+                model, base_url="https://api.perplexity.ai", api_key=api_key
             ),
-            result_type=AssessmentResult,
+            output_type=AssessmentResult,
             system_prompt=(
                 "You are an AEO/GENAI-O strategist who produces evidence-based assessment reports. "
                 "Use your built-in web search capabilities to research the company thoroughly. "
                 "Search for official websites, marketplaces, analyst coverage, media mentions, and credible sources.\n\n"
                 "Provide comprehensive assessment with inline citations from your web searches."
-            )
+            ),
         )
 
     async def assess(self, company_name: str, prompt_template: str) -> AssessmentResult:

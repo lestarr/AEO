@@ -1,8 +1,10 @@
 """Gemini agent for AEO assessments using pydantic-ai."""
 
 import os
+
 from pydantic_ai import Agent
-from pydantic_ai.models.gemini import GeminiModel
+from pydantic_ai.models.google import GoogleModel
+
 from .base import AssessmentAgent, AssessmentResult
 
 
@@ -24,8 +26,8 @@ class GeminiAgent(AssessmentAgent):
         # Create pydantic-ai agent with Gemini model
         # Gemini 2.0+ has built-in Google Search grounding
         self.agent = Agent(
-            model=GeminiModel(model),
-            result_type=AssessmentResult,
+            model=GoogleModel(model),
+            output_type=AssessmentResult,
             system_prompt=(
                 "You are an AEO/GENAI-O strategist who produces evidence-based assessment reports. "
                 "Use your built-in web search capabilities to thoroughly research the company. "

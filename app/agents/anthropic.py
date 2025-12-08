@@ -24,7 +24,7 @@ class AnthropicAgent(AssessmentAgent):
         # Create pydantic-ai agent with Anthropic model and web search tool
         self.agent = Agent(
             model=AnthropicModel(model),
-            result_type=AssessmentResult,
+            output_type=AssessmentResult,
             system_prompt=(
                 "You are an AEO/GENAI-O strategist who produces evidence-based assessment reports. "
                 "Use the web search tool to thoroughly research the company. "
